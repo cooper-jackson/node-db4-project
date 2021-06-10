@@ -38,7 +38,7 @@ exports.up = function(knex) {
             .inTable('ingredients')
             .onDelete('CASCADE')
             .onUpdate('CASCADE')
-        table.string('ingredient_quantity')
+        table.string('quantity')
             .unsigned()
             .notNullable()
     })
