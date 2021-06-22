@@ -1,21 +1,29 @@
+const common = {
+  client: 'sqlite3',
+  useNullAsDefault: true,
+  migrations: { directory: './data/migrations' },
+  seeds: { directory: './data/seeds' },
+  pool: {
+		afterCreate: (conn, done) => {
+			conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
+		}
+	}
+}
+
 module.exports = {
-  development: {
-    client: 'sqlite3',
-    useNullAsDefault: true, // needed for sqlite
+  development: { // process.env.DB_ENV || 'development'
+    ...common,
     connection: {
       filename: './data/recipes.db3',
     },
-    migrations: {
-      directory: './data/migrations'
+  },
+  testing: { // process.env.DB_ENV 'testing'
+    ...common,
+    connection: {
+      filename: './data/test.db3',
     },
-    seeds: {
-      directory: './data/seeds'
-    },
-    pool: { // needed to enable foreign keys in sqlite
-      afterCreate: (conn, done) => {
-        // runs after a connection is made to the sqlite engine
-        conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
-      },
-    },
+  },
+  production: {
+
   },
 };

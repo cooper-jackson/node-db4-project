@@ -1,20 +1,27 @@
-const db = require('../../data/db.config')
+const Recipes = require('./recipe-model');
 
-const validateId = async (req, res, next) => {
-    const { id } = req.params
+function logger(req, res, next) {
+	console.log(`[${new Date().toLocaleString()}] [${req.method}] ${req.path}`);
+	next();
+}
 
-    try {
-        const recipe = db('recipes').where('recipe_id', id).first()
-        if(!recipe) {
-            next({status: 404, message: 'That recipe does not exist.'})
-        } else {
-            next()
-        }
-    } catch (err) {
-        next(err)
-    }
+function validateRecipeID(req, res, next) {
+	Recipes.getRecipeByID(req.params.id)
+		.then(recipe => {
+			if (!recipe) {
+				next({
+					status: 400,
+					message: `recipe id: ${req.params.id} does not exist`
+				});
+			} else {
+				req.recipe = recipe;
+				next();
+			}
+		})
+		.catch(next);
 }
 
 module.exports = {
-    validateId
-}
+	logger,
+	validateRecipeID
+};
